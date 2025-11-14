@@ -136,7 +136,7 @@ int coord(int & x, int & y, int n){
 int gererEvenements(mat & m, RenderWindow & window) {
     int n = m.size();
     Event event;
-    bool drap = false;  // false = left click, true = right click
+    bool drap = false;  // false = clique gauche, true = clique droit
     int x = -1, y = -1;
     
     while (window.pollEvent(event)) {    
@@ -179,4 +179,5 @@ int fenetre(mat & m, RenderWindow & window) {
     window.display();
     
     return continuer;
+
 }
