@@ -13,7 +13,7 @@ Color gcn(int nombre) {
         case 3: return Color(39, 97, 39); // vert fonce
         case 4: return Color(0, 0, 128); // Bleu foncé
         case 5: return Color(140, 58, 7); // Marron
-        case 6: return Color::Cyan;
+        case 6: return Color(245, 190, 39); // jaune citron
         case 7: return Color::Red; 
         case 8: return Color::Magenta;
         default: return Color::Black;
@@ -32,24 +32,43 @@ void carre(int i, int j, int couleur, RenderWindow & window){
 
 void bombes(int i, int j, RenderWindow & window){
     int r = taille_case/4 -1;
-    CircleShape square(r, 4);
-    square.setPosition ((j+1/2)*taille_case+ chg[0],(i+1/2)*taille_case + chg[1]);
-    square.setFillColor(gcn(0));
-    square.setOutlineThickness(2.f);
-    square.setOutlineColor(gcn(0));
-    window.draw(square);  
+    CircleShape pique(r, 8);
+    pique.setPosition ((j+0.25)*taille_case+ chg[0],(i+0.25)*taille_case + chg[1]);
+    pique.setFillColor(gcn(0));
+    pique.setOutlineThickness(2.f);
+    pique.setOutlineColor(gcn(6));
+    window.draw(pique);  
+}
+
+void drapeaux(int i, int j, RenderWindow & window){
+    sf::ConvexShape drapeau;
+    drapeau.setPointCount(3);
+    drapeau.setPoint(0, Vector2f(5, 5));
+    drapeau.setPoint(1, Vector2f(5, 20));
+    drapeau.setPoint(2, Vector2f(15, 12));
+    drapeau.setFillColor(sf::Color::Red);
+    drapeau.setPosition(chg[0]+j * taille_case, +chg[1]+i * taille_case);
+    window.draw(drapeau);
+                    
+    // Bâton du drapeau
+    RectangleShape baton(Vector2f(2, 35));
+    baton.setFillColor(Color::Black);
+    baton.setPosition(chg[0]+j * taille_case + 4, chg[1]+i * taille_case + 5);
+    window.draw(baton);
 }
 
 // verifier switch case
 void cases(int n, int i, int j, RenderWindow & window){
     switch(n){
         // case non revelee, pas de souris dessus
-        case 1 : carre(i, j, 5, window);
+        case 1 : carre(i, j, 2, window); break;
         // case decouverte
-        case 2 : carre(i, j, 2, window);
+        case 2 : carre(i, j, 5, window); break;
         //case bombe
-        case 3 : carre(i, j, 2, window); bombes(i, j, window);
-        
+        case 3 : carre(i, j, 5, window); bombes(i, j, window); break;
+        //case drapeautée
+        case 4 : carre(i, j, 2, window); drapeaux(i, j, window); break;
+	default : carre(i, j, 8, window);
                        
     }
     
@@ -58,48 +77,71 @@ void cases(int n, int i, int j, RenderWindow & window){
 //création des cases
 void affichecases(mat & m, RenderWindow & window){
     int n = m.size();
+    int k = 1;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            cases(3, i, j, window);
+            int & ca = m[i][j];
+
+            if (!ca&&activation){(ca&&drapeau) ? k=4 : k=1;}
+            else{(ca&&bombe) ? k=3 : k=2;} 
+ 
+            cases(k, i, j, window);
+
         }
     }
+}
+
+//affichage graphique
+
+// attention logique des coordonnées!
+int coord(int & x, int & y, int n){
+    int temp = x;
+    x-=chg[0]; y/=taille_case;
+    y-=chg[0]; temp/=taille_case;
+    if(x>=n || y >=n) return 0;
+    return 1;
+}
+
+// fin affichage graphique
+
+int gererEvenements(mat & m, RenderWindow & window) {
+    int n = m.size();
+    Event event;
+    bool drap = 0;
+    int x, y;
+    while (window.pollEvent(event)) {    
+        if (event.type == Event::MouseButtonPressed) {
+            if (event.mouseButton.button == Mouse::Left) {
+                x = event.mouseButton.x;
+                y = event.mouseButton.y;
+                drap = 1;
+            }  
+            else if (event.mouseButton.button == Mouse::Right) {
+                x = event.mouseButton.x;
+                y = event.mouseButton.y;  
+            }
+        }
+    }
+    if (coord(x, y, n)) return cliquer_case(x, y, drap, m);
+    return 1;
 }
 
 //affichage de la fenetre
 // ctr
-void fenetre(mat & m) {
-    RenderWindow window(VideoMode(16*taille_case, 3*taille_case+16*taille_case), "Demineur");
+int fenetre(mat & m, RenderWindow & window) {
     RectangleShape contourext (Vector2f(16*taille_case,16*taille_case));
     contourext.setPosition (0,3*taille_case);
     
-    while (window.isOpen()) {
-        Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == Event::Closed)
-                window.close();
-        }
+    int continuer = gererEvenements(m, window);
 
-        window.clear();
-        window.draw (contourext);
-        affichecases(m, window);
-        window.display();
-    }
-
+    window.clear();
+    window.draw (contourext);
+    affichecases(m, window);
+    window.display();
+    
+    return continuer;
 }
 
 // Drapeau
-/*                   sf::ConvexShape drapeau;
-                    drapeau.setPointCount(3);
-                    drapeau.setPoint(0, sf::Vector2f(5, 5));
-                    drapeau.setPoint(1, sf::Vector2f(5, 20));
-                    drapeau.setPoint(2, sf::Vector2f(15, 12));
-                    drapeau.setFillColor(sf::Color::Red);
-                    drapeau.setPosition(j * taille_case_px, i * taille_case_px);
-                    fenetre.draw(drapeau);
-                    
-                    // Bâton du drapeau
-                    sf::RectangleShape baton(sf::Vector2f(2, 35));
-                    baton.setFillColor(sf::Color::Black);
-                    baton.setPosition(j * taille_case_px + 4, i * taille_case_px + 5);
-                    fenetre.draw(baton);
+/*                   
                     */

@@ -81,19 +81,6 @@ void affiche_tout_matbrut(mat & m) {
 
 //fin fonctions affichage terminal
 
-//affichage graphique
-
-// attention logique des coordonnées!
-int coord(int & x, int & y, int n){
-    int temp = x;
-    x-=chg[0]; y/=taille_case;
-    y-=chg[0]; temp/=taille_case;
-    if(x>=n || y >=n) return 0;
-    return 1;
-}
-
-// fin affichage graphique
-
 //fonctions de jeu
 mat revel_cases(int i, int j, mat & m){
     int n = m.size();

@@ -1,4 +1,6 @@
 #pragma once
 #include "grille.hpp"
+#include <SFML/Graphics.hpp>
+using namespace sf;
 
-int partie();
+int partie(RenderWindow & window);
