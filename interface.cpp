@@ -57,13 +57,31 @@ void drapeaux(int i, int j, RenderWindow & window){
     window.draw(baton);
 }
 
+void afficheNombre(int number, int i, int j, RenderWindow & window) {
+    static Font font;
+    static bool fontLoaded = false;
+    
+    if (!fontLoaded) {
+        font.loadFromFile("arial.ttf");
+        fontLoaded = true;
+    }
+    
+    Text text;
+    text.setFont(font);
+    text.setString(to_string(number));
+    text.setCharacterSize(20);
+    text.setFillColor(gcn(number));
+    text.setPosition(j * taille_case + chg[0] + 15, i * taille_case + chg[1] + 10);
+    window.draw(text);
+}
+
 // verifier switch case
-void cases(int n, int i, int j, RenderWindow & window){
+void cases(int n, int i, int j, int adja, RenderWindow & window){
     switch(n){
         // case non revelee, pas de souris dessus
         case 1 : carre(i, j, 2, window); break;
         // case decouverte
-        case 2 : carre(i, j, 5, window); break;
+        case 2 : carre(i, j, 5, window); if (adja) afficheNombre(adja, i, j, window); break;
         //case bombe
         case 3 : carre(i, j, 5, window); bombes(i, j, window); break;
         //case drapeautée
@@ -77,52 +95,72 @@ void cases(int n, int i, int j, RenderWindow & window){
 //création des cases
 void affichecases(mat & m, RenderWindow & window){
     int n = m.size();
-    int k = 1;
+    
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            int & ca = m[i][j];
-
-            if (!ca&&activation){(ca&&drapeau) ? k=4 : k=1;}
-            else{(ca&&bombe) ? k=3 : k=2;} 
- 
-            cases(k, i, j, window);
-
+            int & cell = m[i][j];
+            int k = 1; // case cachee par defaut
+            
+            if (cell & activation) {
+                // case revelee
+                if (cell & bombe) {
+                    k = 3; // Bombe
+                } else {
+                    k = 2; // case revelee sans nombre ou avec nombre
+                }
+            } else if (cell & drapeau) {
+                k = 4; // case drapeautee
+            } else {
+                k = 1; // case cachee
+            }
+            
+            cases(k, i, j, cell&bombadja, window);
         }
     }
 }
 
-//affichage graphique
-
 // attention logique des coordonnées!
 int coord(int & x, int & y, int n){
-    int temp = x;
-    x-=chg[0]; y/=taille_case;
-    y-=chg[0]; temp/=taille_case;
-    if(x>=n || y >=n) return 0;
-    return 1;
-}
 
-// fin affichage graphique
+    int gridX = (x - chg[0]) / taille_case;
+    int gridY = (y - chg[1]) / taille_case;
+    
+    if(gridX >= 0 && gridX < n && gridY >= 0 && gridY < n) {
+        x = gridX;
+        y = gridY;
+        return 1;
+    }
+    return 0;
+}
 
 int gererEvenements(mat & m, RenderWindow & window) {
     int n = m.size();
     Event event;
-    bool drap = 0;
-    int x, y;
+    bool drap = false;  // false = left click, true = right click
+    int x = -1, y = -1;
+    
     while (window.pollEvent(event)) {    
-        if (event.type == Event::MouseButtonPressed) {
+        if (event.type == Event::Closed) {
+            window.close();
+            return 0;
+        }
+        else if (event.type == Event::MouseButtonPressed) {
             if (event.mouseButton.button == Mouse::Left) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;
-                drap = 1;
+                drap = false;
             }  
             else if (event.mouseButton.button == Mouse::Right) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;  
+                drap = true;
             }
         }
+        if (x != -1 && y != -1 && coord(x, y, n)) {
+            return cliquer_case(x, y, drap, m);
+        }
     }
-    if (coord(x, y, n)) return cliquer_case(x, y, drap, m);
+    
     return 1;
 }
 
@@ -133,6 +171,7 @@ int fenetre(mat & m, RenderWindow & window) {
     contourext.setPosition (0,3*taille_case);
     
     int continuer = gererEvenements(m, window);
+    if(!continuer) revel_bombes(m);
 
     window.clear();
     window.draw (contourext);
@@ -141,7 +180,3 @@ int fenetre(mat & m, RenderWindow & window) {
     
     return continuer;
 }
-
-// Drapeau
-/*                   
-                    */
