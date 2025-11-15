@@ -170,11 +170,29 @@ int fenetre(mat & m, RenderWindow & window) {
     RectangleShape contourext (Vector2f(16*taille_case,16*taille_case));
     contourext.setPosition (0,3*taille_case);
     
+    // Affichage du nombre de bombes restantes
+    RectangleShape bombe_rest (Vector2f(6*taille_case,taille_case));
+    bombe_rest.setPosition(taille_case,taille_case);
+    bombe_rest.setFillColor(gcn(8)); // changer la couleur
+    
+    static Font font;
+    font.loadFromFile("arial.ttf");
+    Text text;
+    text.setFont(font);
+    text.setString("bombes restantes"); 
+    text.setCharacterSize(20);
+    text.setFillColor(gcn(6)); // changer la couleur, ca fait mal aux yeux
+    text.setPosition(1.25*taille_case,1.12*taille_case);
+    
+
+    
     int continuer = gererEvenements(m, window);
     if(!continuer) revel_bombes(m);
 
     window.clear();
     window.draw (contourext);
+    window.draw (bombe_rest);
+    window.draw(text);
     affichecases(m, window);
     window.display();
     

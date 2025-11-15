@@ -13,9 +13,28 @@ int partie(RenderWindow & window){
     int n = m.size();
     int partie_en_cours = 1;
     for(;partie_en_cours;){
-        partie_en_cours = fenetre(m, window);
+        if (victoire(m)) {
+            cout << "Victoire !"; // si quelqu'un veux mettre autre chose
+            break;
+        }
+        else partie_en_cours = fenetre(m, window);
     }
     return 0;
+}
+
+// pour que si on decouvre toutes les cases a decouvrir, la partie s'arrete
+bool victoire(mat & m) {
+    int cd = 0; // nombre de case decouverte
+    int n = m.size();
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (m[i][j]&activation){
+                cd+= 1;
+            }
+        }
+    }
+    return cd==case_a_decouvrir;
 }
 
 /*
@@ -33,4 +52,5 @@ int partie(RenderWindow & window){
     }
     revel_bombes(m);
     affiche_matbrut(m);
+
     */

@@ -4,3 +4,4 @@
 using namespace sf;
 
 int partie(RenderWindow & window);
+bool victoire(mat & m);
