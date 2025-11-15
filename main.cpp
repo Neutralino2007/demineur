@@ -10,6 +10,8 @@ int main(){
 
         partie(window);
         cout << '\n' << "voulez-vous rejouer" << '\n';
+        cout << "0 -> non" << '\n';
+        cout << "1 -> oui" << '\n'; // sinon pas clair de ce qu'on doit faire
         cin >> jouer;
     }
     return 0;
