@@ -70,8 +70,8 @@ void afficheNombre(int number, int i, int j, RenderWindow & window) {
     text.setFont(font);
     text.setString(to_string(number));
     text.setCharacterSize(20);
-    text.setFillColor(gcn(number));
-    text.setPosition(j * taille_case + chg[0] + 15, i * taille_case + chg[1] + 10);
+    text.setFillColor(gcn(8));
+    text.setPosition(j * taille_case + chg[0] + 15, i * taille_case + chg[1] + 10); //modifier 15 et 10 en des calculs dépendants de taille_case pour plus de flexibilite
     window.draw(text);
 }
 
@@ -181,3 +181,4 @@ int fenetre(mat & m, RenderWindow & window) {
     return continuer;
 
 }
+
