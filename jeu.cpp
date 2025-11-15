@@ -29,7 +29,7 @@ bool victoire(mat & m) {
     
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if ((m[i][j]&activation)==32){
+            if (m[i][j]&activation){
                 cd+= 1;
             }
         }
@@ -52,4 +52,5 @@ bool victoire(mat & m) {
     }
     revel_bombes(m);
     affiche_matbrut(m);
+
     */
