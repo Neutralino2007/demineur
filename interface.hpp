@@ -1,5 +1,5 @@
 #pragma once
-#include "grille.hpp"
+#include "types.hpp"
 #include <SFML/Graphics.hpp>
 using namespace sf;
 
@@ -11,5 +11,6 @@ void afficheNombre(int number, int i, int j, RenderWindow & window);
 void cases(int n, int i, int j, int adja, RenderWindow & window);
 void affichecases(mat & m);
 int coord(int & x, int & y, int n);
-int gererEvenements(mat & m, RenderWindow & window);
-int fenetre(mat & m, RenderWindow & window);
+void gererEvenements(mat & m, RenderWindow & window, int & nb1, int & nb2, int & nb3);
+int vict(RenderWindow & window);
+void fenetre(mat & m, RenderWindow & window);

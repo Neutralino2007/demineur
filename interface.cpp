@@ -1,5 +1,4 @@
 #include <iostream>
-#include "grille.hpp"
 #include "interface.hpp"
 
 using namespace sf;
@@ -16,6 +15,7 @@ Color gcn(int nombre) {
         case 6: return Color(245, 190, 39); // jaune citron
         case 7: return Color::Red; 
         case 8: return Color::Magenta;
+        case 9: return Color(166, 166, 166); // gris moyen
         default: return Color::Black;
     }
 }
@@ -70,8 +70,8 @@ void afficheNombre(int number, int i, int j, RenderWindow & window) {
     text.setFont(font);
     text.setString(to_string(number));
     text.setCharacterSize(20);
-    text.setFillColor(gcn(8));
-    text.setPosition(j * taille_case + chg[0] + 15, i * taille_case + chg[1] + 10); //modifier 15 et 10 en des calculs dépendants de taille_case pour plus de flexibilite
+    text.setFillColor(gcn(0));
+    text.setPosition(j * taille_case + chg[0] + 15, i * taille_case + chg[1] + 10);
     window.draw(text);
 }
 
@@ -133,52 +133,97 @@ int coord(int & x, int & y, int n){
     return 0;
 }
 
-int gererEvenements(mat & m, RenderWindow & window) {
+void gererEvenements(mat & m, RenderWindow & window, int & x, int & y, int & drap) {
     int n = m.size();
     Event event;
-    bool drap = false;  // false = clique gauche, true = clique droit
-    int x = -1, y = -1;
+    drap = false;  // false = clique gauche, true = clique droit
+    x = -1; y = -1;
     
     while (window.pollEvent(event)) {    
         if (event.type == Event::Closed) {
             window.close();
-            return 0;
         }
         else if (event.type == Event::MouseButtonPressed) {
             if (event.mouseButton.button == Mouse::Left) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;
-                drap = false;
+                drap = 0;
             }  
             else if (event.mouseButton.button == Mouse::Right) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;  
-                drap = true;
+                drap = 1;
             }
         }
-        if (x != -1 && y != -1 && coord(x, y, n)) {
-            return cliquer_case(x, y, drap, m);
+    }
+}
+
+// afficher bandeau victoire
+int vict(RenderWindow & window) {
+    RectangleShape band_vict (Vector2f(16*taille_case,3*taille_case));
+    band_vict.setPosition(0,6*taille_case);
+    band_vict.setFillColor(gcn(6));
+
+    static Font font;
+    font.loadFromFile("arial.ttf");
+    Text text;
+    text.setFont(font);
+    text.setString("VICTOIRE !!!"); 
+    text.setCharacterSize(50);
+    text.setFillColor(gcn(3)); // changer la couleur, ca fait mal aux yeux
+    text.setPosition(4*taille_case,6.5*taille_case);
+
+    Text instruc;
+    instruc.setFont(font);
+    instruc.setString("Appuie sur une touche pour continuer");
+    instruc.setCharacterSize(20);
+    instruc.setFillColor(gcn(3));
+    instruc.setPosition(3.5*taille_case,8*taille_case);
+
+    window.draw(band_vict); window.draw(text);window.draw(instruc);
+    window.display();
+
+    Event event;
+    while(window.isOpen()){
+        while (window.pollEvent(event)) {    
+            if (event.type == Event::Closed) {
+                window.close(); return 0;
+            }
+            if(event.type == Event::KeyPressed) {
+                return 1;
+            }
         }
     }
-    
-    return 1;
+
 }
+
 
 //affichage de la fenetre
 // ctr
-int fenetre(mat & m, RenderWindow & window) {
-    RectangleShape contourext (Vector2f(16*taille_case,16*taille_case));
-    contourext.setPosition (0,3*taille_case);
+void fenetre(mat & m, RenderWindow & window) {
+    RectangleShape contourext (Vector2f(16*taille_case,3*taille_case));
+    contourext.setPosition (0,0);
+    contourext.setFillColor(gcn(9));
     
-    int continuer = gererEvenements(m, window);
-    if(!continuer) revel_bombes(m);
+    // Affichage du nombre de bombes restantes
+    RectangleShape affiche_bombe_rest (Vector2f(6*taille_case,taille_case));
+    affiche_bombe_rest.setPosition(taille_case,taille_case);
+    affiche_bombe_rest.setFillColor(gcn(3)); // changer la couleur
+    
+    static Font font;
+    font.loadFromFile("arial.ttf");
+    Text text;
+    text.setFont(font);
+    text.setString("bombes restantes"); 
+    text.setCharacterSize(20);
+    text.setFillColor(gcn(6)); // changer la couleur, ca fait mal aux yeux
+    text.setPosition(1.25*taille_case,1.12*taille_case);
 
     window.clear();
     window.draw (contourext);
+    window.draw (affiche_bombe_rest);
+    window.draw(text);
     affichecases(m, window);
     window.display();
-    
-    return continuer;
 
 }
-

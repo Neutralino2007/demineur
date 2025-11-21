@@ -1,5 +1,4 @@
 #include "jeu.hpp"
-#include "interface.hpp"
 #include <SFML/Graphics.hpp>
 using namespace sf;
 
@@ -13,9 +12,30 @@ int partie(RenderWindow & window){
     int n = m.size();
     int partie_en_cours = 1;
     for(;partie_en_cours;){
-        partie_en_cours = fenetre(m, window);
+        
+        if(!window.isOpen()) partie_en_cours = 0;
+         
+        int x; int y; int drap;
+        gererEvenements(m, window, x, y, drap);
+        if (x != -1 && y != -1 && coord(x, y, n)) {
+            //verifier que les coords sont bien entrees
+            partie_en_cours = cliquer_case(x, y, drap, m);
+        }
+        fenetre(m, window);
+        //tests
+        if(!partie_en_cours) {revel_bombes(m); fenetre(m,window);}
+        
+        if (victoire(m)) {
+            fenetre(m, window);
+            return vict(window);
+        }
     }
     return 0;
+}
+
+// pour que si on decouvre toutes les cases a decouvrir, la partie s'arrete
+bool victoire(mat & m) {
+    return cases_a_decouvrir==cases_decouvertes;
 }
 
 /*

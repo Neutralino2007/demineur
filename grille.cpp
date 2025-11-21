@@ -3,6 +3,11 @@
 #include <cstdlib>
 #include <ctime>
 
+
+int drapeaux_restants = nb_bombes;
+int cases_decouvertes = 0;
+
+
 mat creation(int n){
     vector<int> ligne(n,0);
     mat m(n,ligne);
@@ -91,8 +96,8 @@ mat revel_cases(int i, int j, mat & m){
         int a=q.front(); q.pop();
         int b=q.front(); q.pop();
         int& emplac = m[a][b];
-        if(!(emplac&bombe) && !(emplac&drapeau)){
-            emplac = emplac|activation;
+        if(!(emplac&bombe) && !(emplac&drapeau) && !(emplac&activation)){
+            emplac = emplac|activation; cases_decouvertes++;
         }
         if (!(emplac&bombadja)) for(auto& dir : directions){
             int itemp = a+dir[0];
@@ -118,10 +123,10 @@ mat revel_bombes(mat & m){
 
 int cliquer_case(int i, int j, bool drap, mat & m){
     if (!(activation&m[j][i])){
-        if(drap) m[j][i]=m[j][i]^drapeau;
+        if(drap) {m[j][i]=m[j][i]^drapeau; (m[j][i]&drapeau) ? drapeaux_restants-- : drapeaux_restants++;}
 
         else if(!(m[j][i]&drapeau)){
-            m[j][i]=m[j][i]|activation; revel_cases(j, i, m);
+            revel_cases(j, i, m);
             return !(bombe&m[j][i]);
         }
     }

@@ -2,6 +2,11 @@
 #include "types.hpp"
 #include <vector>
 
+
+extern int drapeaux_restants;
+extern int cases_decouvertes;
+
+
 mat creation(int n=16);
 mat placer(mat & m, int bombes=nb_bombes);
 mat remplir(mat & m);

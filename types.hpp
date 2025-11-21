@@ -9,6 +9,8 @@ const int drapeau = 1<<6;
 const int activation = 1<<5;
 const int bombadja = 15;
 const int directions[8][2] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+const int nb_cases = 16 ;
+const int cases_a_decouvrir = nb_cases*nb_cases - nb_bombes;
 
 const int taille_case = 40;
 
