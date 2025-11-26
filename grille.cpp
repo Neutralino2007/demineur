@@ -3,11 +3,6 @@
 #include <cstdlib>
 #include <ctime>
 
-
-int drapeaux_restants = nb_bombes;
-int cases_decouvertes = 0;
-
-
 mat creation(int n){
     vector<int> ligne(n,0);
     mat m(n,ligne);
@@ -86,8 +81,10 @@ void affiche_tout_matbrut(mat & m) {
 
 //fin fonctions affichage terminal
 
+// pb quand on ajoute un drapeau, le nombre de bombe restante diminue (ok) mais quand on devoile une case, le nombre de bombe restante augmente
+
 //fonctions de jeu
-mat revel_cases(int i, int j, mat & m){
+mat revel_cases(int i, int j, mat & m, int & cases_decouvertes){
     int n = m.size();
     queue<int> q;
     q.push(i);
@@ -96,8 +93,9 @@ mat revel_cases(int i, int j, mat & m){
         int a=q.front(); q.pop();
         int b=q.front(); q.pop();
         int& emplac = m[a][b];
-        if(!(emplac&bombe) && !(emplac&drapeau) && !(emplac&activation)){
-            emplac = emplac|activation; cases_decouvertes++;
+        cases_decouvertes++;
+        if(!(emplac&bombe) && !(emplac&drapeau)){
+            emplac = emplac|activation;
         }
         if (!(emplac&bombadja)) for(auto& dir : directions){
             int itemp = a+dir[0];
@@ -121,12 +119,19 @@ mat revel_bombes(mat & m){
     return m;
 }
 
-int cliquer_case(int i, int j, bool drap, mat & m){
+// Y a un pb avec le comptage de bombes restantes, ca fait moins dans tous les cas
+int cliquer_case(int i, int j, bool drap, mat & m, int & bombes_restantes, int & cases_decouvertes){
     if (!(activation&m[j][i])){
-        if(drap) {m[j][i]=m[j][i]^drapeau; (m[j][i]&drapeau) ? drapeaux_restants-- : drapeaux_restants++;}
+        if(drap) {
+            if (m[i][j]&drapeau){ // operateur ternaire !!!
+                bombes_restantes++;
+            }
+            else {bombes_restantes--;}
+            m[j][i]=m[j][i]^drapeau;
+        }
 
         else if(!(m[j][i]&drapeau)){
-            revel_cases(j, i, m);
+            m[j][i]=m[j][i]|activation; revel_cases(j, i, m,cases_decouvertes);
             return !(bombe&m[j][i]);
         }
     }

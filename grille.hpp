@@ -2,17 +2,12 @@
 #include "types.hpp"
 #include <vector>
 
-
-extern int drapeaux_restants;
-extern int cases_decouvertes;
-
-
 mat creation(int n=16);
 mat placer(mat & m, int bombes=nb_bombes);
 mat remplir(mat & m);
 void affiche_matbrut(mat & m);
 void affiche_tout_matbrut(mat & m);
-mat revel_cases(int i, int j, mat & m);
+mat revel_cases(int i, int j, mat & m, int & cases_decouvertes);
 mat revel_bombes(mat & m);
-int cliquer_case(int i, int j, bool drap, mat & m);
+int cliquer_case(int i, int j, bool drap, mat & m, int & bombes_restantes, int & cases_decouvertes);
 mat initialisation_grille();

@@ -1,4 +1,5 @@
 #include <iostream>
+#include "grille.hpp"
 #include "interface.hpp"
 
 using namespace sf;
@@ -133,29 +134,35 @@ int coord(int & x, int & y, int n){
     return 0;
 }
 
-void gererEvenements(mat & m, RenderWindow & window, int & x, int & y, int & drap) {
+int gererEvenements(mat & m, RenderWindow & window, int & bombes_restantes, int & cases_decouvertes) {
     int n = m.size();
     Event event;
-    drap = false;  // false = clique gauche, true = clique droit
-    x = -1; y = -1;
+    bool drap = false;  // false = clique gauche, true = clique droit
+    int x = -1, y = -1;
     
     while (window.pollEvent(event)) {    
         if (event.type == Event::Closed) {
             window.close();
+            return 0;
         }
         else if (event.type == Event::MouseButtonPressed) {
             if (event.mouseButton.button == Mouse::Left) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;
-                drap = 0;
+                drap = false;
             }  
             else if (event.mouseButton.button == Mouse::Right) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;  
-                drap = 1;
+                drap = true;
             }
         }
+        if (x != -1 && y != -1 && coord(x, y, n)) {
+            return cliquer_case(x, y, drap, m, bombes_restantes, cases_decouvertes);
+        }
     }
+    
+    return 1;
 }
 
 // afficher bandeau victoire
@@ -200,7 +207,7 @@ int vict(RenderWindow & window) {
 
 //affichage de la fenetre
 // ctr
-void fenetre(mat & m, RenderWindow & window) {
+int fenetre(mat & m, RenderWindow & window, int & bombes_restantes, int & cases_decouvertes) {
     RectangleShape contourext (Vector2f(16*taille_case,3*taille_case));
     contourext.setPosition (0,0);
     contourext.setFillColor(gcn(9));
@@ -214,10 +221,14 @@ void fenetre(mat & m, RenderWindow & window) {
     font.loadFromFile("arial.ttf");
     Text text;
     text.setFont(font);
-    text.setString("bombes restantes"); 
+    text.setString("bombes restantes  " + to_string(bombes_restantes)); 
     text.setCharacterSize(20);
     text.setFillColor(gcn(6)); // changer la couleur, ca fait mal aux yeux
     text.setPosition(1.25*taille_case,1.12*taille_case);
+    
+    int continuer = gererEvenements(m, window, bombes_restantes, cases_decouvertes);
+    // revel_bombes(m);
+    if(!continuer) revel_bombes(m);
 
     window.clear();
     window.draw (contourext);
@@ -225,5 +236,7 @@ void fenetre(mat & m, RenderWindow & window) {
     window.draw(text);
     affichecases(m, window);
     window.display();
+    
+    return continuer;
 
 }
