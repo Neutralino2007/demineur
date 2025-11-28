@@ -170,7 +170,7 @@ int vict(RenderWindow & window) {
     text.setFont(font);
     text.setString("VICTOIRE !!!"); 
     text.setCharacterSize(50);
-    text.setFillColor(gcn(3)); // changer la couleur, ca fait mal aux yeux
+    text.setFillColor(gcn(3)); 
     text.setPosition(4*taille_case,6.5*taille_case);
 
     Text instruc;
@@ -197,10 +197,48 @@ int vict(RenderWindow & window) {
 
 }
 
+// afficher bandeau defaite
+int defaite(RenderWindow & window) {
+    RectangleShape band_def (Vector2f(16*taille_case,3*taille_case));
+    band_def.setPosition(0,6*taille_case);
+    band_def.setFillColor(gcn(6));
+
+    static Font font;
+    font.loadFromFile("arial.ttf");
+    Text text;
+    text.setFont(font);
+    text.setString("DEFAITE ..."); 
+    text.setCharacterSize(50);
+    text.setFillColor(gcn(7)); 
+    text.setPosition(4*taille_case,6.5*taille_case);
+
+    Text instruct;
+    instruct.setFont(font);
+    instruct.setString("Appuie sur une touche pour continuer");
+    instruct.setCharacterSize(20);
+    instruct.setFillColor(gcn(4));
+    instruct.setPosition(3.5*taille_case,8*taille_case);
+
+    window.draw(band_def); window.draw(text);window.draw(instruct);
+    window.display();
+    
+    Event event;
+    while(window.isOpen()){
+        while (window.pollEvent(event)) {    
+            if (event.type == Event::Closed) {
+                window.close(); return 0;
+            }
+            if(event.type == Event::KeyPressed) {
+                return 1;
+            }
+        }
+    }
+
+}
 
 //affichage de la fenetre
 // ctr
-void fenetre(mat & m, RenderWindow & window) {
+void fenetre(mat & m, int drapeaux_restants, RenderWindow & window) {
     RectangleShape contourext (Vector2f(16*taille_case,3*taille_case));
     contourext.setPosition (0,0);
     contourext.setFillColor(gcn(9));
@@ -208,15 +246,15 @@ void fenetre(mat & m, RenderWindow & window) {
     // Affichage du nombre de bombes restantes
     RectangleShape affiche_bombe_rest (Vector2f(6*taille_case,taille_case));
     affiche_bombe_rest.setPosition(taille_case,taille_case);
-    affiche_bombe_rest.setFillColor(gcn(3)); // changer la couleur
+    affiche_bombe_rest.setFillColor(gcn(3)); 
     
     static Font font;
     font.loadFromFile("arial.ttf");
     Text text;
     text.setFont(font);
-    text.setString("bombes restantes"); 
+    text.setString("bombes restantes  " + to_string(drapeaux_restants));
     text.setCharacterSize(20);
-    text.setFillColor(gcn(6)); // changer la couleur, ca fait mal aux yeux
+    text.setFillColor(gcn(6)); 
     text.setPosition(1.25*taille_case,1.12*taille_case);
 
     window.clear();

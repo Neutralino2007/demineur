@@ -13,4 +13,5 @@ void affichecases(mat & m);
 int coord(int & x, int & y, int n);
 void gererEvenements(mat & m, RenderWindow & window, int & nb1, int & nb2, int & nb3);
 int vict(RenderWindow & window);
-void fenetre(mat & m, RenderWindow & window);
+int defaite(RenderWindow & window);
+void fenetre(mat & m, int drapeaux_restants, RenderWindow & window);

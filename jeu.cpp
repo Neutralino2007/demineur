@@ -1,4 +1,5 @@
 #include "jeu.hpp"
+#include "utils.hpp"
 #include <SFML/Graphics.hpp>
 using namespace sf;
 
@@ -21,12 +22,29 @@ int partie(RenderWindow & window){
             //verifier que les coords sont bien entrees
             partie_en_cours = cliquer_case(x, y, drap, m);
         }
-        fenetre(m, window);
-        //tests
-        if(!partie_en_cours) {revel_bombes(m); fenetre(m,window);}
+
+        fenetre(m, drapeaux_restants, window);
         
-        if (victoire(m)) {
-            fenetre(m, window);
+        //tests
+        if(!partie_en_cours) {
+            revel_bombes(m);
+
+            for(int i = 0; i<m.size(); i++){
+                for(int j = 0; j<m.size(); j++){
+                    cout << m[i][j] << ' ';
+                }
+                cout << '\n';
+            } 
+
+            fenetre(m, drapeaux_restants, window); 
+            
+            
+            //while(window.isOpen()){}
+            return defaite(window);
+        }
+        
+        else if (victoire(m)) {
+            fenetre(m, drapeaux_restants, window);
             return vict(window);
         }
     }
