@@ -7,44 +7,42 @@ using namespace sf;
 // on considere les coords a partir du coin haut gauche.
 // (x,y) correspond à m[y][x]
 
+void solveur(mat & m){
+
+}
+
 int partie(RenderWindow & window){
     mat m = initialisation_grille();
     affiche_tout_matbrut(m);
     int n = m.size();
     int partie_en_cours = 1;
+    int joueur_humain = 0;
+    cin >> joueur_humain;
     for(;partie_en_cours;){
         
         if(!window.isOpen()) partie_en_cours = 0;
-         
-        int x; int y; int drap;
-        gererEvenements(m, window, x, y, drap);
-        if (x != -1 && y != -1 && coord(x, y, n)) {
-            //verifier que les coords sont bien entrees
-            partie_en_cours = cliquer_case(x, y, drap, m);
+        
+        if (joueur_humain){
+            int x; int y; int drap;
+            gererEvenements(m, window, x, y, drap);
+            if (x != -1 && y != -1 && coord(x, y, n)) {
+                //verifier que les coords sont bien entrees
+                partie_en_cours = cliquer_case(x, y, drap, m);
+            }
+        } else { //a modifier
+            solveur(m);
         }
-
+        
         fenetre(m, drapeaux_restants, window);
         
         //tests
         if(!partie_en_cours) {
             revel_bombes(m);
-
-            for(int i = 0; i<m.size(); i++){
-                for(int j = 0; j<m.size(); j++){
-                    cout << m[i][j] << ' ';
-                }
-                cout << '\n';
-            } 
-
-            fenetre(m, drapeaux_restants, window); 
-            
-            
-            //while(window.isOpen()){}
+           
             return defaite(window);
         }
         
         else if (victoire(m)) {
-            fenetre(m, drapeaux_restants, window);
             return vict(window);
         }
     }

@@ -144,8 +144,28 @@ mat initialisation_grille(){
 
 //robot et deduction grille
 
-mat reveler_une_case(mat & m){
-   return m; 
+mat init_mat_deduc(mat & m){
+    vector<int> ligne(n,0);
+    mat mat_deduc(n,ligne);
+    return mat_deduc;
+}
+
+//le bool en entree indique s'il y a eu une modification ou non
+//retourne la liste des coordonnees ou il y eu modif
+
+vector<int> deductions(bool & d, mat & m, mat & mat_deduc){
+    int n = m.size();
+    for(int i = 0; i<n; i++){
+        for(int j = 0; j<n; j++){
+            //cas 1 : une case est entouree par autant de bombe que son numero
+            if(mat_deduc[i][j])
+
+            //cas 2 : une case a autant de voisins non reveles que son nombre
+
+            //cas3 : voir si dispositions possibles puis conflits : a faire plus tard avec backtrcking
+        }
+    }
+    return m; 
 }
 
 //fin robot
