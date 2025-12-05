@@ -157,15 +157,52 @@ vector<int> deductions(bool & d, mat & m, mat & mat_deduc){
     int n = m.size();
     for(int i = 0; i<n; i++){
         for(int j = 0; j<n; j++){
-            //cas 1 : une case est entouree par autant de bombe que son numero
-            if(mat_deduc[i][j])
+            vector<int> l;
+            // mise a jour des connaissances
+            mat_deduc[i][j]|=m[i][j]&activation;
 
-            //cas 2 : une case a autant de voisins non reveles que son nombre
+            //cas 1 : une case a autant de voisins non reveles que son nombre de bombes
+            if(mat_deduc[i][j]&bombadja && (activation&mat_deduc[i][j])){
+                int itemp, jtemp;
+                vector<int> coord;
+                for(auto& dir : directions){
+                    itemp = i+dir[0];
+                    jtemp = j+dir[1];
+                    if (0<=itemp && 0<=jtemp && n>itemp && n>jtemp)&&(!(activation&mat_deduc[itemp][jtemp]){
+                        coord.push_back(itemp);
+                        coord.push_back(jtemp);
+
+                    }
+                }
+                if (coord.size()==2*bombadja&mat_deduc[i][j]){
+                    
+                    for (int e=0; e<coord.size(); e+=2){
+                        mat_deduc[coord[e]][coord[e+1]]|=bombe;
+                        //cas 2 : une case est entouree par autant de bombe que son numero
+                        for(auto & dir : directions){
+                            int itemp = coord[e] + dir[0];
+                            int jtemp = coord[e+1] + dir[1];
+                            if(0<=itemp && 0<=jtemp && n>itemp && n>jtemp) {
+                                mat_deduc[itemp][jtemp]--;
+                            }
+                        }
+                        mat_deduc[i][j]|=activation;
+
+                    }                    
+	        }  
+            }
+
+            
+//ajouter les coordonnees qui sont bonnes a cliquer. modifier linit de mat deduc pour avoir acces aux bombadj. recup deduction dans solveur dans jeu
+
+
+            
+
 
             //cas3 : voir si dispositions possibles puis conflits : a faire plus tard avec backtrcking
         }
     }
-    return m; 
+    return l; 
 }
 
 //fin robot
