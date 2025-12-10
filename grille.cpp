@@ -3,17 +3,19 @@
 #include <cstdlib>
 #include <ctime>
 
-
+// gestion de l'affichage du nb de bombes restantes suppose (en fonction des drapeaux places)
 int drapeaux_restants = nb_bombes;
+// peremet de detecter la victoire
 int cases_decouvertes = 0;
 
-
+// initialisation d'une matrice vide
 mat creation(int n){
     vector<int> ligne(n,0);
     mat m(n,ligne);
     return m;
 }
 
+// placer le nombre de bombe souhaite aleatoirement dans une grille vide
 mat placer(mat & m, int bombes){
     int ligne, colonne;
     for(;bombes>0;){
@@ -28,10 +30,11 @@ mat placer(mat & m, int bombes){
 }
 
 /* On utilise le format 00 0 0000
-Les deux premiers bits représentent l'état drapeau/pas drapeau, l'état activé/caché.
+Les deux premiers bits de plus fort poids représentent l'état drapeau/pas drapeau, l'état activé/caché.
 Le 3e bit représente si la case est une bome.
 Les quatres derniers bits correspondent au nombre de bombes adjacentes. */
 
+// determine les contraintes en calculant pour chaque case le nb de bombes adjacentes.
 mat remplir(mat & m){
     int n = m.size();
     for(int i = 0; i<n; i++){
@@ -48,7 +51,16 @@ mat remplir(mat & m){
     return m;
 }
 
-// affichage dans terminal
+// initialise une grille pour une partie
+mat initialisation_grille(){
+    srand(time(0));
+    mat m = creation();
+    placer(m);
+    remplir(m);
+    return m;
+}
+
+// affichage dans terminal du jeu
 void affiche_matbrut(mat & m) {
     int n = m.size();
     cout << "  ";
@@ -73,6 +85,7 @@ void affiche_matbrut(mat & m) {
     }
 }
 
+// permet d'avoir acces a l'affcihage de toute la matrice pour debbogage
 void affiche_tout_matbrut(mat & m) {
     int n = m.size();
     for (int i = 0; i < n; i++) {
@@ -87,8 +100,11 @@ void affiche_tout_matbrut(mat & m) {
 //fin fonctions affichage terminal
 
 //fonctions de jeu
+
+// cette fonction revele les cases qui doivent etre revelees apres un clique
 mat revel_cases(int i, int j, mat & m){
     int n = m.size();
+    // on gere les case a traiter par une file pour eviter d'eventuels problemes de recursion
     queue<int> q;
     q.push(i);
     q.push(j);
@@ -96,9 +112,11 @@ mat revel_cases(int i, int j, mat & m){
         int a=q.front(); q.pop();
         int b=q.front(); q.pop();
         int& emplac = m[a][b];
+        // condition pour determiner si la case courante doit etre revelee
         if(!(emplac&bombe) && !(emplac&drapeau) && !(emplac&activation)){
             emplac = emplac|activation; cases_decouvertes++;
         }
+        // si la case est vide on ajoute ses voisines pour une potentielle revelation
         if (!(emplac&bombadja)) for(auto& dir : directions){
             int itemp = a+dir[0];
             int jtemp = b+dir[1];
@@ -111,6 +129,7 @@ mat revel_cases(int i, int j, mat & m){
     return m;
 }
 
+// en cas de defaite, cette fonction permet d'activer toutes les bombes en meme temps
 mat revel_bombes(mat & m){
     int n = m.size();
     for(int i = 0; i<n; i++){
@@ -121,34 +140,33 @@ mat revel_bombes(mat & m){
     return m;
 }
 
+// cette fonction gere le fait d'avoir cliquer sur une case
 int cliquer_case(int i, int j, bool drap, mat & m){
+    // si la case n'est pas deja active
     if (!(activation&m[i][j])){
+        // si mode drapeau : changement du bit de drapeau et gestion du nombre de drapeaux restants a afficher
         if(drap) {m[i][j]=m[i][j]^drapeau; (m[i][j]&drapeau) ? drapeaux_restants-- : drapeaux_restants++;}
 
+        // sinon et si la case n'a pas un drapeau de place on revele la cases et potentiellement ses voisines
         else if(!(m[i][j]&drapeau)){
             revel_cases(i, j, m);
+            // si la case cliquee etait une bombe on renverra 0 pour signifier la defaite
             return !(bombe&m[i][j]);
         }
     }
     return 1;
 }
 
-mat initialisation_grille(){
-    srand(time(0));
-    mat m = creation();
-    placer(m);
-    remplir(m);
-    return m;
-}
-
 //robot et deduction grille
+// initialisation d'une matrice parallele pour faciliter les deductions et simuler ce a quoi le joueur a rellement acces
 mat initialisation_grille_deduc(mat & m, int f){
     mat mat_deduc = creation();
     for(int i = 0; i<(int) m.size(); i++){
         for(int j = 0; j<(int) m.size(); j++){
-            mat_deduc[i][j]=m[i][j]&bombadja;
+            mat_deduc[i][j]=m[i][j]&bombadja; // on ne place que les valeurs des contraintes
         }
     }
+    // activation d'une case vide aleatoire pour que le robot commence ses deductions
     int x=rand()%m.size();
     int y=rand()%m.size();
     for(;(m[x][y]&bombe) || (m[x][y]&bombadja);){
@@ -161,8 +179,7 @@ mat initialisation_grille_deduc(mat & m, int f){
 }
 
 //le bool en entree indique s'il y a eu une modification ou non
-//retourne la liste des coordonnees ou il y eu modif
-
+//retourne la liste des coordonnees des cases deduites comme safes
 vector<int> deductions(mat & m, mat & mat_deduc){
     int n = m.size();
     vector<int> l;
@@ -231,5 +248,6 @@ vector<int> deductions(mat & m, mat & mat_deduc){
     }
     return l; 
 }
+
 
 //fin robot
