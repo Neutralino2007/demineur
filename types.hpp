@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include <SFML/Graphics.hpp>
+using namespace sf;
 using namespace std;
 
 const int nb_bombes = 40;

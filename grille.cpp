@@ -122,12 +122,12 @@ mat revel_bombes(mat & m){
 }
 
 int cliquer_case(int i, int j, bool drap, mat & m){
-    if (!(activation&m[j][i])){
-        if(drap) {m[j][i]=m[j][i]^drapeau; (m[j][i]&drapeau) ? drapeaux_restants-- : drapeaux_restants++;}
+    if (!(activation&m[i][j])){
+        if(drap) {m[i][j]=m[i][j]^drapeau; (m[i][j]&drapeau) ? drapeaux_restants-- : drapeaux_restants++;}
 
-        else if(!(m[j][i]&drapeau)){
-            revel_cases(j, i, m);
-            return !(bombe&m[j][i]);
+        else if(!(m[i][j]&drapeau)){
+            revel_cases(i, j, m);
+            return !(bombe&m[i][j]);
         }
     }
     return 1;
@@ -143,9 +143,92 @@ mat initialisation_grille(){
 //fin fonctions de jeu
 
 //robot et deduction grille
+mat initialisation_grille_deduc(mat & m, int f){
+    srand(time(0));
+    mat mat_deduc = creation();
+    for(int i = 0; i<(int) m.size(); i++){
+        for(int j = 0; j<(int) m.size(); j++){
+            mat_deduc[i][j]=m[i][j]&bombadja;
+        }
+    }
+    int x=rand()%m.size();
+    int y=rand()%m.size();
+    for(;(m[x][y]&bombe) || (m[x][y]&bombadja);){
+        x=rand()%m.size();
+        y=rand()%m.size();   
+    }
+    mat_deduc[x][y]|=activation;
+    if(f) cliquer_case(x, y, 0, m);
+    return mat_deduc;
+}
+//le bool en entree indique s'il y a eu une modification ou non
+//retourne la liste des coordonnees ou il y eu modif
 
-mat reveler_une_case(mat & m){
-   return m; 
+vector<int> deductions(mat & m, mat & mat_deduc){
+    int n = m.size();
+    vector<int> l;
+    for(int i = 0; i<n; i++){
+        for(int j = 0; j<n; j++){
+            // mise a jour des connaissances
+            mat_deduc[i][j]|=m[i][j]&activation;
+
+            //cas 1 : une case a autant de voisins non reveles que son nombre de bombes
+            if((activation&mat_deduc[i][j]) && mat_deduc[i][j]&bombadja && !(bombe&mat_deduc[i][j])){
+                int itemp, jtemp;
+                vector<int> coord;
+
+                for(auto& dir : directions){
+                    itemp = i+dir[0];
+                    jtemp = j+dir[1];
+                    if (0<=itemp && 0<=jtemp && n>itemp && n>jtemp && !(activation&mat_deduc[itemp][jtemp]) && !(bombe&mat_deduc[itemp][jtemp])){
+                        coord.push_back(itemp);
+                        coord.push_back(jtemp);
+                    }
+                    cout<<coord.size()<<"\n";
+                }
+                if (coord.size()==2*(bombadja&mat_deduc[i][j])){
+                    
+                    for (int e=0; e<(int) coord.size(); e+=2){
+                        cout<<"je trouve des bombes \n";
+                        mat_deduc[coord[e]][coord[e+1]]|=bombe;
+                        cliquer_case(coord[e], coord[e+1], 1, m);
+                        cout<<coord[e]<< coord[e+1];
+                        //cas 2 : une case est entouree par autant de bombes que son numero
+                        for(auto & dir : directions){
+                            int itemp = coord[e] + dir[0];
+                            int jtemp = coord[e+1] + dir[1];
+                            if(0<=itemp && 0<=jtemp && n>itemp && n>jtemp) {
+                                mat_deduc[itemp][jtemp]--;
+                                if (!(mat_deduc[itemp][jtemp]&bombadja)){
+                                    for(auto & dire : directions){
+                                        int ibis = itemp + dire[0];
+                                        int jbis = jtemp + dire[1];
+                                        if(0<=ibis && 0<=jbis && n>ibis && n>jbis && !(mat_deduc[ibis][jbis]&bombe) && !(mat_deduc[ibis][jbis]&activation)){
+                                           if(!(mat_deduc[ibis][jbis]&drapeau)){
+                                                l.push_back(ibis);
+                                                l.push_back(jbis);
+                                                mat_deduc[ibis][jbis]|=drapeau;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }                    
+	              }  
+              }
+
+            
+//recup deduction dans solveur dans jeu
+
+
+            
+
+
+            //cas3 : voir si dispositions possibles puis conflits : a faire plus tard eventuellement avec backtrcking
+        }
+    }
+    return l; 
 }
 
 //fin robot

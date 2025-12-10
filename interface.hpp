@@ -1,7 +1,5 @@
 #pragma once
 #include "types.hpp"
-#include <SFML/Graphics.hpp>
-using namespace sf;
 
 Color gcn(int nombre);
 void carre(int i, int j, int couleur, RenderWindow & window);

@@ -1,50 +1,72 @@
 #include "jeu.hpp"
 #include "utils.hpp"
-#include <SFML/Graphics.hpp>
-using namespace sf;
 
 // verifier la logique des coord x, y !
 // on considere les coords a partir du coin haut gauche.
 // (x,y) correspond à m[y][x]
+
+void solveur(mat & m, mat & mat_deduc, queue<int> & q, int & x, int & y){
+    if (q.empty()){
+        vector<int> l = deductions(m, mat_deduc);
+        for (int i=0; i<(int) l.size();i++){
+            q.push(l[i]); 
+        }
+        if (q.empty()){
+            x = rand()%m.size();
+            y = rand()%m.size();
+            for(;(mat_deduc[x][y])&bombe || (mat_deduc[x][y])&activation;){
+                x = rand()%m.size();
+                y = rand()%m.size();
+            }
+        }
+    }
+    else{
+        x = q.front(); q.pop();
+        y = q.front(); q.pop();
+    }
+
+}
 
 int partie(RenderWindow & window){
     mat m = initialisation_grille();
     affiche_tout_matbrut(m);
     int n = m.size();
     int partie_en_cours = 1;
+    int joueur_humain = 0;
+    queue<int> q;
+    cout << "Qui joue ?" << "\n" << "1 -> humain" << "\n" << "0 -> robot" << "\n";
+    cin >> joueur_humain;
+    mat mat_deduc = initialisation_grille_deduc(m, !joueur_humain);
     for(;partie_en_cours;){
         
         if(!window.isOpen()) partie_en_cours = 0;
-         
-        int x; int y; int drap;
-        gererEvenements(m, window, x, y, drap);
-        if (x != -1 && y != -1 && coord(x, y, n)) {
-            //verifier que les coords sont bien entrees
+        int x; int y;int drap=0;
+        if (joueur_humain){
+            gererEvenements(m, window, x, y, drap);
+            if (x != -1 && y != -1 && coord(x, y, n)) {
+                //verifier que les coords sont bien entrees
+               partie_en_cours = cliquer_case(x, y, drap, m);
+            }
+        } else {
+            solveur(m, mat_deduc, q, x, y);
             partie_en_cours = cliquer_case(x, y, drap, m);
-        }
-
-        fenetre(m, drapeaux_restants, window);
+            cout<<"je clique sur la case "<<x<<" "<< y<<"\n";
+        } 
         
+        
+        fenetre(m, drapeaux_restants, window);
+        if (!joueur_humain){
+            Time t = seconds(1);
+            sleep(t);
+        }
         //tests
         if(!partie_en_cours) {
             revel_bombes(m);
-
-            for(int i = 0; i<m.size(); i++){
-                for(int j = 0; j<m.size(); j++){
-                    cout << m[i][j] << ' ';
-                }
-                cout << '\n';
-            } 
-
-            fenetre(m, drapeaux_restants, window); 
-            
-            
-            //while(window.isOpen()){}
+           
             return defaite(window);
         }
         
         else if (victoire(m)) {
-            fenetre(m, drapeaux_restants, window);
             return vict(window);
         }
     }
@@ -71,4 +93,5 @@ bool victoire(mat & m) {
     }
     revel_bombes(m);
     affiche_matbrut(m);
+
     */

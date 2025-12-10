@@ -1,6 +1,5 @@
 #include "jeu.hpp"
-#include <SFML/Graphics.hpp>
-using namespace sf;
+
 
 int main(){
     cout << "Mode Graphique" << '\n';
