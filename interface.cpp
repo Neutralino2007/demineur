@@ -1,8 +1,6 @@
 #include <iostream>
 #include "interface.hpp"
 
-using namespace sf;
-
 
 //Centralisation des couleurs
 Color gcn(int nombre) {
@@ -126,19 +124,18 @@ int coord(int & x, int & y, int n){
     int gridY = (y - chg[1]) / taille_case;
     
     if(gridX >= 0 && gridX < n && gridY >= 0 && gridY < n) {
-        x = gridX;
-        y = gridY;
+        y = gridX;
+        x = gridY;
         return 1;
     }
     return 0;
 }
 
 void gererEvenements(mat & m, RenderWindow & window, int & x, int & y, int & drap) {
-    int n = m.size();
     Event event;
     drap = false;  // false = clique gauche, true = clique droit
     x = -1; y = -1;
-    
+
     while (window.pollEvent(event)) {    
         if (event.type == Event::Closed) {
             window.close();
@@ -194,7 +191,7 @@ int vict(RenderWindow & window) {
             }
         }
     }
-
+    return 0;
 }
 
 // afficher bandeau defaite
@@ -233,7 +230,7 @@ int defaite(RenderWindow & window) {
             }
         }
     }
-
+    return 0;
 }
 
 //affichage de la fenetre

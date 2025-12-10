@@ -17,5 +17,5 @@ mat revel_bombes(mat & m);
 int cliquer_case(int i, int j, bool drap, mat & m);
 mat initialisation_grille();
 
-mat init_mat_deduc(mat & m);
-vector<int> deductions(bool & d, mat & m, mat & mat_deduc);
+mat initialisation_grille_deduc(mat & m, int f);
+vector<int> deductions(mat & m, mat & mat_deduc);
