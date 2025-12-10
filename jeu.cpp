@@ -29,7 +29,7 @@ void solveur(mat & m, mat & mat_deduc, queue<int> & q, int & x, int & y){
 
 int partie(RenderWindow & window){
     mat m = initialisation_grille();
-    affiche_tout_matbrut(m);
+    //affiche_tout_matbrut(m);
     int n = m.size();
     int partie_en_cours = 1;
     int joueur_humain = 0;
@@ -49,16 +49,17 @@ int partie(RenderWindow & window){
             }
         } else {
             solveur(m, mat_deduc, q, x, y);
-            partie_en_cours = cliquer_case(x, y, drap, m);
-            cout<<"je clique sur la case "<<x<<" "<< y<<"\n";
+            // decide action from mat_deduc: if solver considers this a bomb => place flag; else reveal
+            int drap_action = (mat_deduc[x][y] & bombe) ? 1 : 0;
+            partie_en_cours = cliquer_case(x, y, drap_action, m);
         } 
         
         
         fenetre(m, drapeaux_restants, window);
-        if (!joueur_humain){
+        /*if (!joueur_humain){
             Time t = seconds(1);
             sleep(t);
-        }
+        }*/
         //tests
         if(!partie_en_cours) {
             revel_bombes(m);
@@ -77,21 +78,3 @@ int partie(RenderWindow & window){
 bool victoire(mat & m) {
     return cases_a_decouvrir==cases_decouvertes;
 }
-
-/*
-    for(;partie_en_cours;){
-        affiche_matbrut(m); cout << '\n';
-        int drap;
-        cout << "Indiquer si vous placer ou non un drapeau" << '\n';
-        cin >> drap;
-        int x=-1, y=-1;
-        for(;x<0||y<0||x>n||y>n;){
-            cout << "Veuillez indiquer les coordonnees de la case a cliquer" << '\n';
-            cin >> x >> y;  
-        }
-        partie_en_cours = cliquer_case(x, y, drap, m);
-    }
-    revel_bombes(m);
-    affiche_matbrut(m);
-
-    */
