@@ -222,18 +222,18 @@ vector<int> deductions(mat & m, mat & mat_deduc){
                             int itemp = bx + dir[0];
                             int jtemp = by + dir[1];
                             if(0<=itemp && 0<=jtemp && n>itemp && n>jtemp) {
-                                // decrementation securisee des 4 bits de poids faible
+                                //Décrémentation sécurisée des 4 bits de poids faible.
                                 int nb = mat_deduc[itemp][jtemp] & bombadja;
                                 if (nb > 0) nb--;
                                 mat_deduc[itemp][jtemp] = (mat_deduc[itemp][jtemp] & ~bombadja) | (nb & bombadja);
 
-                                // cases alentours safes
+                                //On peut maintenat déterminer quelles cases aux alentours sont safes.
                                 if ((mat_deduc[itemp][jtemp] & bombadja) == 0){
                                     for(auto & dire : directions){
                                         int ibis = itemp + dire[0];
                                         int jbis = jtemp + dire[1];
                                         if(0<=ibis && 0<=jbis && n>ibis && n>jbis && !(mat_deduc[ibis][jbis] & bombe) && !(mat_deduc[ibis][jbis] & activation)){
-                                            // securite avec queued
+                                            //Sécurité avec queued
                                             if(!(mat_deduc[ibis][jbis] & queued)){
                                                 l.push_back(ibis);
                                                 l.push_back(jbis);
@@ -247,13 +247,13 @@ vector<int> deductions(mat & m, mat & mat_deduc){
                     }
                 }
             }
-
-            //cas3 : voir si dispositions possibles puis conflits : a faire plus tard eventuellement avec backtrcking
+//cas3 : voir si dispositions possibles puis conflits : a faire plus tard eventuellement avec backtrcking
         }
     }
     return l; 
 }
 
 
-//fin robot
+//fin robot :)
+
 
