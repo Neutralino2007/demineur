@@ -140,11 +140,9 @@ mat initialisation_grille(){
     remplir(m);
     return m;
 }
-//fin fonctions de jeu
 
 //robot et deduction grille
 mat initialisation_grille_deduc(mat & m, int f){
-    srand(time(0));
     mat mat_deduc = creation();
     for(int i = 0; i<(int) m.size(); i++){
         for(int j = 0; j<(int) m.size(); j++){
@@ -161,6 +159,7 @@ mat initialisation_grille_deduc(mat & m, int f){
     if(f) cliquer_case(x, y, 0, m);
     return mat_deduc;
 }
+
 //le bool en entree indique s'il y a eu une modification ou non
 //retourne la liste des coordonnees ou il y eu modif
 
@@ -170,60 +169,62 @@ vector<int> deductions(mat & m, mat & mat_deduc){
     for(int i = 0; i<n; i++){
         for(int j = 0; j<n; j++){
             // mise a jour des connaissances
-            mat_deduc[i][j]|=m[i][j]&activation;
+            mat_deduc[i][j] |= (m[i][j] & activation);
 
             //cas 1 : une case a autant de voisins non reveles que son nombre de bombes
-            if((activation&mat_deduc[i][j]) && mat_deduc[i][j]&bombadja && !(bombe&mat_deduc[i][j])){
+            if((activation & mat_deduc[i][j]) && (mat_deduc[i][j] & bombadja) && !(bombe & mat_deduc[i][j])){
                 int itemp, jtemp;
                 vector<int> coord;
 
                 for(auto& dir : directions){
                     itemp = i+dir[0];
                     jtemp = j+dir[1];
-                    if (0<=itemp && 0<=jtemp && n>itemp && n>jtemp && !(activation&mat_deduc[itemp][jtemp]) && !(bombe&mat_deduc[itemp][jtemp])){
+                    if (0<=itemp && 0<=jtemp && n>itemp && n>jtemp && !(activation & mat_deduc[itemp][jtemp]) && !(bombe & mat_deduc[itemp][jtemp])){
                         coord.push_back(itemp);
                         coord.push_back(jtemp);
                     }
-                    cout<<coord.size()<<"\n";
                 }
-                if (coord.size()==2*(bombadja&mat_deduc[i][j])){
-                    
-                    for (int e=0; e<(int) coord.size(); e+=2){
-                        cout<<"je trouve des bombes \n";
-                        mat_deduc[coord[e]][coord[e+1]]|=bombe;
-                        cliquer_case(coord[e], coord[e+1], 1, m);
-                        cout<<coord[e]<< coord[e+1];
-                        //cas 2 : une case est entouree par autant de bombes que son numero
+                // coord a les coordonnees des voisins non reveles
+                if (coord.size() == 2 * (mat_deduc[i][j] & bombadja)){
+                    // si la condition est satisfaite, les voisins sauvegardes doivent etre des bombes
+                    for (int e = 0; e < (int) coord.size(); e += 2){
+                        int bx = coord[e], by = coord[e+1];
+                        // la bombe est marquee dans mat_deduc et un drapeau est affiche sur la matrice reelle
+                        mat_deduc[bx][by] |= bombe;
+                        // les cases traites sont marques comme pushed dans la file pour eviter les duplicatats
+                        mat_deduc[bx][by] |= queued;
+                        cliquer_case(bx, by, 1, m);
+
+                        // les valeurs des cases adjacentes doivent être mise à jour.
                         for(auto & dir : directions){
-                            int itemp = coord[e] + dir[0];
-                            int jtemp = coord[e+1] + dir[1];
+                            int itemp = bx + dir[0];
+                            int jtemp = by + dir[1];
                             if(0<=itemp && 0<=jtemp && n>itemp && n>jtemp) {
-                                mat_deduc[itemp][jtemp]--;
-                                if (!(mat_deduc[itemp][jtemp]&bombadja)){
+                                // decrementation securisee des 4 bits de poids faible
+                                int nb = mat_deduc[itemp][jtemp] & bombadja;
+                                if (nb > 0) nb--;
+                                mat_deduc[itemp][jtemp] = (mat_deduc[itemp][jtemp] & ~bombadja) | (nb & bombadja);
+
+                                // cases alentours safes
+                                if ((mat_deduc[itemp][jtemp] & bombadja) == 0){
                                     for(auto & dire : directions){
                                         int ibis = itemp + dire[0];
                                         int jbis = jtemp + dire[1];
-                                        if(0<=ibis && 0<=jbis && n>ibis && n>jbis && !(mat_deduc[ibis][jbis]&bombe) && !(mat_deduc[ibis][jbis]&activation)){
-                                           if(!(mat_deduc[ibis][jbis]&drapeau)){
+                                        if(0<=ibis && 0<=jbis && n>ibis && n>jbis && !(mat_deduc[ibis][jbis] & bombe) && !(mat_deduc[ibis][jbis] & activation)){
+                                            // securite avec queued
+                                            if(!(mat_deduc[ibis][jbis] & queued)){
                                                 l.push_back(ibis);
                                                 l.push_back(jbis);
-                                                mat_deduc[ibis][jbis]|=drapeau;
+                                                mat_deduc[ibis][jbis] |= queued;
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                    }                    
-	              }  
-              }
-
-            
-//recup deduction dans solveur dans jeu
-
-
-            
-
+                    }
+                }
+            }
 
             //cas3 : voir si dispositions possibles puis conflits : a faire plus tard eventuellement avec backtrcking
         }

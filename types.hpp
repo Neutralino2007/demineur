@@ -19,4 +19,7 @@ const int taille_case = 40;
 //coord haut_gauche (origine grille)
 const int chg[2] = {0,3*taille_case};
 
+// Bit de verification de traitement solveur
+const int queued = 1<<7;
+
 typedef vector<vector<int>> mat;
