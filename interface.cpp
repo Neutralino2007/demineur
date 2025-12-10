@@ -18,7 +18,7 @@ Color gcn(int nombre) {
     }
 }
 
-//grille
+// pour affichage d'un petit carre de la grille
 void carre(int i, int j, int couleur, RenderWindow & window){
     RectangleShape carre(Vector2f(taille_case,taille_case));
     carre.setPosition (j*taille_case + chg[0],i*taille_case + chg[1]);
@@ -73,7 +73,7 @@ void afficheNombre(int number, int i, int j, RenderWindow & window) {
     window.draw(text);
 }
 
-// verifier switch case
+// gere l'affichage d'une cellule de la grille en fonction de son etat
 void cases(int n, int i, int j, int adja, RenderWindow & window){
     switch(n){
         // case non revelee, pas de souris dessus
@@ -90,7 +90,7 @@ void cases(int n, int i, int j, int adja, RenderWindow & window){
     
 }
 
-//création des cases
+// affiche toutes les cellules de la grille
 void affichecases(mat & m, RenderWindow & window){
     int n = m.size();
     
@@ -117,13 +117,16 @@ void affichecases(mat & m, RenderWindow & window){
     }
 }
 
-// attention logique des coordonnées!
+// recupere les coordoonnees transmise paa la position de la souris
 int coord(int & x, int & y, int n){
 
+	// prise en compte du decalage de la grille avec l'origine et conversion en entier correspondant à la position dans la matrice
     int gridX = (x - chg[0]) / taille_case;
     int gridY = (y - chg[1]) / taille_case;
-    
+
+	// verification coords valides
     if(gridX >= 0 && gridX < n && gridY >= 0 && gridY < n) {
+		// echange des coordonnees pour acceder a la bonne case de la matrice
         y = gridX;
         x = gridY;
         return 1;
@@ -140,12 +143,14 @@ void gererEvenements(mat & m, RenderWindow & window, int & x, int & y, int & dra
         if (event.type == Event::Closed) {
             window.close();
         }
+		// clique gauche, placement d'un drapeau
         else if (event.type == Event::MouseButtonPressed) {
             if (event.mouseButton.button == Mouse::Left) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;
                 drap = 0;
             }  
+			// clique droit, decouverte d'une case
             else if (event.mouseButton.button == Mouse::Right) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;  
@@ -181,6 +186,7 @@ int vict(RenderWindow & window) {
     window.display();
 
     Event event;
+	// attente pour eventuelle nouvelle partie
     while(window.isOpen()){
         while (window.pollEvent(event)) {    
             if (event.type == Event::Closed) {
@@ -220,6 +226,7 @@ int defaite(RenderWindow & window) {
     window.display();
     
     Event event;
+	// attente pour eventuelle nouvelle partie
     while(window.isOpen()){
         while (window.pollEvent(event)) {    
             if (event.type == Event::Closed) {
@@ -234,7 +241,6 @@ int defaite(RenderWindow & window) {
 }
 
 //affichage de la fenetre
-// ctr
 void fenetre(mat & m, int drapeaux_restants, RenderWindow & window) {
     RectangleShape contourext (Vector2f(16*taille_case,3*taille_case));
     contourext.setPosition (0,0);
@@ -258,7 +264,9 @@ void fenetre(mat & m, int drapeaux_restants, RenderWindow & window) {
     window.draw (contourext);
     window.draw (affiche_bombe_rest);
     window.draw(text);
+	// affichage du reste de la grille
     affichecases(m, window);
     window.display();
 
 }
+
