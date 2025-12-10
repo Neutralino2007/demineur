@@ -1,6 +1,6 @@
 #include "jeu.hpp"
 #include "utils.hpp"
-
+gdoius
 // verifier la logique des coord x, y !
 // on considere les coords a partir du coin haut gauche.
 // (x,y) correspond à m[y][x]
@@ -79,3 +79,4 @@ bool victoire(mat & m) {
     return cases_a_decouvrir==cases_decouvertes;
 
 }
+
