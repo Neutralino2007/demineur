@@ -49,7 +49,7 @@ int partie(RenderWindow & window){
             }
         } else {
             solveur(m, mat_deduc, q, x, y);
-            // decide action from mat_deduc: if solver considers this a bomb => place flag; else reveal
+            // decide action de mat deduc si bombe drapeau; sinon revele
             int drap_action = (mat_deduc[x][y] & bombe) ? 1 : 0;
             partie_en_cours = cliquer_case(x, y, drap_action, m);
         } 
@@ -77,4 +77,5 @@ int partie(RenderWindow & window){
 // pour que si on decouvre toutes les cases a decouvrir, la partie s'arrete
 bool victoire(mat & m) {
     return cases_a_decouvrir==cases_decouvertes;
+
 }
