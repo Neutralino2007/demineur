@@ -2,7 +2,7 @@
 #include "interface.hpp"
 
 
-//Centralisation des couleurs
+//Centralisation des couleurs.
 Color gcn(int nombre) {
     switch(nombre) {
         case 1: return Color(152, 235, 152);// vert clair
@@ -18,7 +18,7 @@ Color gcn(int nombre) {
     }
 }
 
-// pour affichage d'un petit carre de la grille
+//Pour afficher d'un petit carré de la grille.
 void carre(int i, int j, int couleur, RenderWindow & window){
     RectangleShape carre(Vector2f(taille_case,taille_case));
     carre.setPosition (j*taille_case + chg[0],i*taille_case + chg[1]);
@@ -27,7 +27,7 @@ void carre(int i, int j, int couleur, RenderWindow & window){
     carre.setOutlineColor(gcn(3));
     window.draw(carre);
 }
-
+//Affichage des bombes
 void bombes(int i, int j, RenderWindow & window){
     int r = taille_case/4 -1;
     CircleShape pique(r, 8);
@@ -37,7 +37,7 @@ void bombes(int i, int j, RenderWindow & window){
     pique.setOutlineColor(gcn(6));
     window.draw(pique);  
 }
-
+//Affichage des drapeaux
 void drapeaux(int i, int j, RenderWindow & window){
     sf::ConvexShape drapeau;
     drapeau.setPointCount(3);
@@ -54,7 +54,7 @@ void drapeaux(int i, int j, RenderWindow & window){
     baton.setPosition(chg[0]+j * taille_case + 4, chg[1]+i * taille_case + 5);
     window.draw(baton);
 }
-
+//Affiche le nombre de bombes adjacentes d'une case.
 void afficheNombre(int number, int i, int j, RenderWindow & window) {
     static Font font;
     static bool fontLoaded = false;
@@ -73,16 +73,16 @@ void afficheNombre(int number, int i, int j, RenderWindow & window) {
     window.draw(text);
 }
 
-// gere l'affichage d'une cellule de la grille en fonction de son etat
+//Gère l'affichage d'une cellule de la grille en fonction de son état.
 void cases(int n, int i, int j, int adja, RenderWindow & window){
     switch(n){
-        // case non revelee, pas de souris dessus
+        //Case non révélée, pas de souris dessus.
         case 1 : carre(i, j, 2, window); break;
-        // case decouverte
+        //Case découverte.
         case 2 : carre(i, j, 5, window); if (adja) afficheNombre(adja, i, j, window); break;
-        //case bombe
+        //Case bombe.
         case 3 : carre(i, j, 5, window); bombes(i, j, window); break;
-        //case drapeautée
+        //Case drapeautée.
         case 4 : carre(i, j, 2, window); drapeaux(i, j, window); break;
 	default : carre(i, j, 8, window);
                        
@@ -90,26 +90,26 @@ void cases(int n, int i, int j, int adja, RenderWindow & window){
     
 }
 
-// affiche toutes les cellules de la grille
+//Affiche toutes les cellules de la grille.
 void affichecases(mat & m, RenderWindow & window){
     int n = m.size();
     
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             int & cell = m[i][j];
-            int k = 1; // case cachee par defaut
+            int k = 1; //Les cases sont cachées par defaut.
             
             if (cell & activation) {
                 // case revelee
                 if (cell & bombe) {
                     k = 3; // Bombe
                 } else {
-                    k = 2; // case revelee sans nombre ou avec nombre
+                    k = 2; //Case révélée sans nombre ou avec nombre.
                 }
             } else if (cell & drapeau) {
-                k = 4; // case drapeautee
+                k = 4; //Case drapeautée
             } else {
-                k = 1; // case cachee
+                k = 1; //Case cachée
             }
             
             cases(k, i, j, cell&bombadja, window);
@@ -117,16 +117,16 @@ void affichecases(mat & m, RenderWindow & window){
     }
 }
 
-// recupere les coordoonnees transmise paa la position de la souris
+//Récupère les coordonnées transmises par la position de la souris.
 int coord(int & x, int & y, int n){
 
-	// prise en compte du decalage de la grille avec l'origine et conversion en entier correspondant à la position dans la matrice
+	//Prise en compte du décalage de la grille avec l'origine et conversion en entier correspondant à la position dans la matrice.
     int gridX = (x - chg[0]) / taille_case;
     int gridY = (y - chg[1]) / taille_case;
 
-	// verification coords valides
+	//Vérification de la validité des coordonnées.
     if(gridX >= 0 && gridX < n && gridY >= 0 && gridY < n) {
-		// echange des coordonnees pour acceder a la bonne case de la matrice
+		//Echange des coordonnées pour accéder à la bonne case de la matrice.
         y = gridX;
         x = gridY;
         return 1;
@@ -136,21 +136,21 @@ int coord(int & x, int & y, int n){
 
 void gererEvenements(mat & m, RenderWindow & window, int & x, int & y, int & drap) {
     Event event;
-    drap = false;  // false = clique gauche, true = clique droit
+    drap = false;  // false = clic gauche, true = clic droit
     x = -1; y = -1;
 
     while (window.pollEvent(event)) {    
         if (event.type == Event::Closed) {
             window.close();
         }
-		// clique gauche, placement d'un drapeau
+		//Clic gauche, placement d'un drapeau
         else if (event.type == Event::MouseButtonPressed) {
             if (event.mouseButton.button == Mouse::Left) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;
                 drap = 0;
             }  
-			// clique droit, decouverte d'une case
+			//Clic droit, découverte d'une case
             else if (event.mouseButton.button == Mouse::Right) {
                 x = event.mouseButton.x;
                 y = event.mouseButton.y;  
@@ -160,7 +160,7 @@ void gererEvenements(mat & m, RenderWindow & window, int & x, int & y, int & dra
     }
 }
 
-// afficher bandeau victoire
+//Affichage du bandeau de victoire
 int vict(RenderWindow & window) {
     RectangleShape band_vict (Vector2f(16*taille_case,3*taille_case));
     band_vict.setPosition(0,6*taille_case);
@@ -186,7 +186,7 @@ int vict(RenderWindow & window) {
     window.display();
 
     Event event;
-	// attente pour eventuelle nouvelle partie
+	//Attente pour une éventuelle nouvelle partie.
     while(window.isOpen()){
         while (window.pollEvent(event)) {    
             if (event.type == Event::Closed) {
@@ -200,7 +200,7 @@ int vict(RenderWindow & window) {
     return 0;
 }
 
-// afficher bandeau defaite
+//Affichage du bandeau de défaite.
 int defaite(RenderWindow & window) {
     RectangleShape band_def (Vector2f(16*taille_case,3*taille_case));
     band_def.setPosition(0,6*taille_case);
@@ -226,7 +226,7 @@ int defaite(RenderWindow & window) {
     window.display();
     
     Event event;
-	// attente pour eventuelle nouvelle partie
+	//Attente pour une éventuelle nouvelle partie
     while(window.isOpen()){
         while (window.pollEvent(event)) {    
             if (event.type == Event::Closed) {
@@ -240,13 +240,13 @@ int defaite(RenderWindow & window) {
     return 0;
 }
 
-//affichage de la fenetre
+//Affichage de la fenêtre
 void fenetre(mat & m, int drapeaux_restants, RenderWindow & window) {
     RectangleShape contourext (Vector2f(16*taille_case,3*taille_case));
     contourext.setPosition (0,0);
     contourext.setFillColor(gcn(9));
     
-    // Affichage du nombre de bombes restantes
+    //Affichage du nombre de bombes restantes
     RectangleShape affiche_bombe_rest (Vector2f(6*taille_case,taille_case));
     affiche_bombe_rest.setPosition(taille_case,taille_case);
     affiche_bombe_rest.setFillColor(gcn(3)); 
@@ -269,4 +269,5 @@ void fenetre(mat & m, int drapeaux_restants, RenderWindow & window) {
     window.display();
 
 }
+
 
