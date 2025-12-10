@@ -29,7 +29,7 @@ void solveur(mat & m, mat & mat_deduc, queue<int> & q, int & x, int & y){
 
 int partie(RenderWindow & window){
     mat m = initialisation_grille();
-    affiche_tout_matbrut(m);
+    //affiche_tout_matbrut(m);
     int n = m.size();
     int partie_en_cours = 1;
     int joueur_humain = 0;
@@ -52,15 +52,14 @@ int partie(RenderWindow & window){
             // decide action from mat_deduc: if solver considers this a bomb => place flag; else reveal
             int drap_action = (mat_deduc[x][y] & bombe) ? 1 : 0;
             partie_en_cours = cliquer_case(x, y, drap_action, m);
-            cout<<"je clique sur la case "<<x<<" "<< y<<"\n";
         } 
         
         
         fenetre(m, drapeaux_restants, window);
-        if (!joueur_humain){
+        /*if (!joueur_humain){
             Time t = seconds(1);
             sleep(t);
-        }
+        }*/
         //tests
         if(!partie_en_cours) {
             revel_bombes(m);
