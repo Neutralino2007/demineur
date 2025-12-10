@@ -53,7 +53,7 @@ int partie(RenderWindow & window){
         //Joueur robot : utilise ses déductions pour cliquer sur les cases. 
         else {
             solveur(m, mat_deduc, q, x, y);
-            partie_en_cours = cliquer_case(x, y, 0, m);
+            if (x != -1 && y != -1) partie_en_cours = cliquer_case(x, y, 0, m);
         } 
         fenetre(m, drapeaux_restants, window);
         //permet de voir l'avancement du raisonnement du robot
@@ -80,5 +80,6 @@ bool victoire(mat & m) {
     return cases_a_decouvrir==cases_decouvertes;
 
 }
+
 
 
