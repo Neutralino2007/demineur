@@ -1,6 +1,6 @@
 #include "jeu.hpp"
 
-
+//Fonction qui gère TOUT
 int main(){
     cout << "Mode Graphique" << '\n';
     int jouer = 1;
@@ -10,4 +10,5 @@ int main(){
         jouer = partie(window);
     }
     return 0;
+
 }
