@@ -122,7 +122,7 @@ mat revel_bombes(mat & m){
 }
 
 int cliquer_case(int i, int j, bool drap, mat & m){
-    if (!(activation&m[j][i])){
+    if (!(activation&m[i][j])){
         if(drap) {m[i][j]=m[i][j]^drapeau; (m[i][j]&drapeau) ? drapeaux_restants-- : drapeaux_restants++;}
 
         else if(!(m[i][j]&drapeau)){
@@ -204,7 +204,7 @@ vector<int> deductions(mat & m, mat & mat_deduc){
                                         int ibis = itemp + dire[0];
                                         int jbis = jtemp + dire[1];
                                         if(0<=ibis && 0<=jbis && n>ibis && n>jbis && !(mat_deduc[ibis][jbis]&bombe) && !(mat_deduc[ibis][jbis]&activation)){
-                                           if(mat_deduc[ibis][jbis]&drapeau){
+                                           if(!(mat_deduc[ibis][jbis]&drapeau)){
                                                 l.push_back(ibis);
                                                 l.push_back(jbis);
                                                 mat_deduc[ibis][jbis]|=drapeau;

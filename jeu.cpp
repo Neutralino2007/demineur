@@ -14,7 +14,7 @@ void solveur(mat & m, mat & mat_deduc, queue<int> & q, int & x, int & y){
         if (q.empty()){
             x = rand()%m.size();
             y = rand()%m.size();
-            for(;!((mat_deduc[x][y])&bombe) && !((mat_deduc[x][y])&activation);){
+            for(;!((mat_deduc[x][y])&bombe) || !((mat_deduc[x][y])&activation);){
                 x = rand()%m.size();
                 y = rand()%m.size();
             }
